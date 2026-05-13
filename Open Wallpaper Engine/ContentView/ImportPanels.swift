@@ -39,28 +39,49 @@ extension AppDelegate {
             if response != .OK { return }
             guard let url = panel.urls.first else { return }
             
-            guard let wallpaperFolder = try? FileWrapper(url: url)
-            else {
+            guard let wallpaperFolder = try? FileWrapper(url: url) else {
                 DispatchQueue.main.async {
                     self?.contentViewModel.alertImportModal(which: .permissionDenied)
                 }
                 return
             }
             
-            guard wallpaperFolder.fileWrappers?["project.json"] != nil
-            else {
-                DispatchQueue.main.async {
-                    self?.contentViewModel.alertImportModal(which: .doesNotContainWallpaper)
-                }
-                return
-            }
+            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             
-            DispatchQueue.main.async {
-                try? FileManager.default.copyItem(
-                    at: url,
-                    to: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                        .appending(path: url.lastPathComponent)
-                )
+            if wallpaperFolder.fileWrappers?["project.json"] != nil {
+                // 選択したフォルダ自体が壁紙フォルダ
+                DispatchQueue.main.async {
+                    try? FileManager.default.copyItem(
+                        at: url,
+                        to: documentsURL.appending(path: url.lastPathComponent)
+                    )
+                }
+            } else {
+                // 選択したフォルダが親フォルダ → 中のサブフォルダを全てスキャン
+                guard let subfolders = wallpaperFolder.fileWrappers else {
+                    DispatchQueue.main.async {
+                        self?.contentViewModel.alertImportModal(which: .doesNotContainWallpaper)
+                    }
+                    return
+                }
+                
+                let wallpaperSubfolders = subfolders.filter { $0.value.fileWrappers?["project.json"] != nil }
+                
+                guard !wallpaperSubfolders.isEmpty else {
+                    DispatchQueue.main.async {
+                        self?.contentViewModel.alertImportModal(which: .doesNotContainWallpaper)
+                    }
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    for name in wallpaperSubfolders.keys {
+                        try? FileManager.default.copyItem(
+                            at: url.appending(path: name),
+                            to: documentsURL.appending(path: name)
+                        )
+                    }
+                }
             }
         }
     }

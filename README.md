@@ -1,5 +1,8 @@
-Wallpaper Engine
+Patched Open Wallpaper Engine
 =========
+
+### [超かぐや姫 All-in-one](https://steamcommunity.com/sharedfiles/filedetails/?id=3679122549) を動かす為に改造されたOpen Wallpaper Engineです
+あくまで自己満で改造したやつなのでswiftへの知識も疎くバグが多数ありますが修正するかはわかりません。
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/MrWindDog/wallpaper-engine-mac)
 

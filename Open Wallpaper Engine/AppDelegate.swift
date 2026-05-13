@@ -148,13 +148,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         
         self.wallpaperWindow.styleMask = [.borderless, .fullSizeContentView]
         self.wallpaperWindow.level = NSWindow.Level(Int(CGWindowLevelForKey(.desktopWindow)))
-        self.wallpaperWindow.collectionBehavior = .stationary
+        // .stationary に加えて .canJoinAllSpaces を追加 → 全SpaceとMission Controlで壁紙が維持される
+        self.wallpaperWindow.collectionBehavior = [.stationary, .canJoinAllSpaces, .ignoresCycle]
         
-        self.wallpaperWindow.setFrame(NSRect(origin: .zero,
-                                             size: CGSize(width: NSScreen.main!.visibleFrame.size.width,
-                                                          height: NSScreen.main!.visibleFrame.size.height + NSScreen.main!.visibleFrame.origin.y + 1)
-                                            ),
-                                      display: true)
+        // visibleFrame はDock/メニューバーを除いた領域のため、画面全体をカバーする frame を使用
+        self.wallpaperWindow.setFrame(NSScreen.main!.frame, display: true)
         self.wallpaperWindow.isMovable = false
         self.wallpaperWindow.titlebarAppearsTransparent = true
         self.wallpaperWindow.titleVisibility = .hidden

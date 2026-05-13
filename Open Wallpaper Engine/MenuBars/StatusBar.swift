@@ -6,12 +6,24 @@
 //
 
 import Cocoa
+import WebKit
 
 extension AppDelegate {
+    /// WKWebView を壁紙ウィンドウのビュー階層から取得するヘルパー
+    private var wallpaperWebView: WKWebView? {
+        wallpaperWindow.contentView?.subviews.first?.subviews.first as? WKWebView
+    }
+
     @objc func mute() {
         switch self.wallpaperViewModel.currentWallpaper.project.type.lowercased() {
         case "video":
             self.wallpaperViewModel.playVolume = 0
+        case "web":
+            // Web壁紙: ページ内のaudio/video要素を全てミュート
+            wallpaperWebView?.evaluateJavaScript(
+                "document.querySelectorAll('audio, video').forEach(function(el){ el.muted = true; });",
+                completionHandler: nil
+            )
         default:
             return
         }
@@ -21,6 +33,12 @@ extension AppDelegate {
         switch self.wallpaperViewModel.currentWallpaper.project.type.lowercased() {
         case "video":
             self.wallpaperViewModel.playVolume = self.wallpaperViewModel.lastPlayVolume == 0 ? 1 : self.wallpaperViewModel.lastPlayVolume
+        case "web":
+            // Web壁紙: ページ内のaudio/video要素を全てミュート解除
+            wallpaperWebView?.evaluateJavaScript(
+                "document.querySelectorAll('audio, video').forEach(function(el){ el.muted = false; });",
+                completionHandler: nil
+            )
         default:
             return
         }
@@ -30,6 +48,12 @@ extension AppDelegate {
         switch self.wallpaperViewModel.currentWallpaper.project.type.lowercased() {
         case "video":
             self.wallpaperViewModel.playRate = 0
+        case "web":
+            // Web壁紙: ページ内のaudio/video要素を全て一時停止
+            wallpaperWebView?.evaluateJavaScript(
+                "document.querySelectorAll('audio, video').forEach(function(el){ el.pause(); });",
+                completionHandler: nil
+            )
         default:
             return
         }
@@ -39,6 +63,12 @@ extension AppDelegate {
         switch self.wallpaperViewModel.currentWallpaper.project.type.lowercased() {
         case "video":
             self.wallpaperViewModel.playRate = self.wallpaperViewModel.lastPlayRate == 0 ? 1 : self.wallpaperViewModel.lastPlayRate
+        case "web":
+            // Web壁紙: ページ内のaudio/video要素を全て再生再開
+            wallpaperWebView?.evaluateJavaScript(
+                "document.querySelectorAll('audio, video').forEach(function(el){ el.play().catch(function(){}); });",
+                completionHandler: nil
+            )
         default:
             return
         }

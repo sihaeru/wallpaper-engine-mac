@@ -150,7 +150,7 @@ class ContentViewModel: ObservableObject, DropDelegate {
             }
             guard self.type.contains(type) else { return false }
             
-            // 
+            //
             
             // Age Rating
             var ageRating: FRAgeRating
@@ -167,67 +167,8 @@ class ContentViewModel: ObservableObject, DropDelegate {
             guard self.ageRating.contains(ageRating) else { return false }
             
             // Tags
-            var tags = FRTag.none
-            var transformedTags: [FRTag] = []
-            if let someTags = wallpaper.project.tags {
-//                tags = someTags.map { tag in
-//                    switch tag.lowercased() {
-//                    case "abstract":
-//                        return FRTag.abstract
-//                    case "animal":
-//                        return FRTag.animal
-//                    case "anime":
-//                        return FRTag.anime
-//                    case "cartoon":
-//                        return FRTag.cartoon
-//                    case "cgi":
-//                        return FRTag.cgi
-//                    case "cyberpunk":
-//                        return FRTag.cyberpunk
-//                    case "fantasy":
-//                        return FRTag.fantasy
-//                    case "game":
-//                        return FRTag.game
-//                    case "girls":
-//                        return FRTag.girls
-//                    case "guys":
-//                        return FRTag.guys
-//                    case "landscape":
-//                        return FRTag.landscape
-//                    case "medieval":
-//                        return FRTag.medieval
-//                    case "memes":
-//                        return FRTag.memes
-//                    case "mmd":
-//                        return FRTag.mmd
-//                    case "music":
-//                        return FRTag.music
-//                    case "nature":
-//                        return FRTag.nature
-//                    case "pixelart":
-//                        return FRTag.pixelArt
-//                    case "relaxing":
-//                        return FRTag.relaxing
-//                    case "retro":
-//                        return FRTag.retro
-//                    case "sci-fi":
-//                        return FRTag.sciFi
-//                    case "sports":
-//                        return FRTag.sports
-//                    case "technology":
-//                        return FRTag.technology
-//                    case "television":
-//                        return FRTag.television
-//                    case "vehicle":
-//                        return FRTag.vehicle
-//                    default:
-//                        return FRTag.unspecifiedGenre
-//                    }
-//                }
-            } else {
-                tags = .none
-            }
-            guard self.tag != .none else { return false }
+            // NOTE: タグフィルタリングは未実装のため、タグフィルターが有効な場合は常に通過させる
+            // (self.tag != .none の guard は全壁紙を非表示にするバグのため削除)
             
             // Finish Filtering
             return true
@@ -407,7 +348,7 @@ class ContentViewModel: ObservableObject, DropDelegate {
     }
 }
 
-extension Array: RawRepresentable where Element: Codable {
+extension Array: @retroactive RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
               let result = try? JSONDecoder().decode([Element].self, from: data)
